@@ -22,4 +22,10 @@ public interface BagInterface<T> {
     public int getCapacity();
 
     public T[] toArray();
+
+    public T removeEntry(int givenIndex);
+
+    public boolean add(T entry);
+
+    public boolean isEmpty();
 }

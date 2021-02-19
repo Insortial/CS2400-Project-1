@@ -56,6 +56,15 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
     public void copy(T[] bag2)
     {
         bag = Arrays.copyOf(bag2, bag2.length);
+        int counter = 0;
+        while(counter < bag2.length)
+        {
+            if(bag2[counter] != null)
+            {
+                numberOfEntries++;
+            }
+            counter++;
+        }
     }
 
     /** Adds an item to the bag
@@ -90,12 +99,40 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
     return where;
     } // end getIndexOf
 
-
+	/** Removes one occurrence of a given entry from this bag.
+    @param anEntry  The entry to be removed.
+    @return  True if the removal was successful, or false if not. */
     public boolean remove(T entry)
     {
         int index = getIndexOf(entry);
-        T result
+        T result = removeEntry(index);
+        return entry.equals(result);
     }
+
+    /**Removes and returns the entry at a given index within the array bag.
+       If no such entry exists, returns null.
+       Preconditions: 0 <= givenIndex < numberOfEntries;
+                   checkIntegrity has been called. */
+    public T removeEntry(int givenIndex)
+    {
+            T result = null;
+            if (!isEmpty() && (givenIndex >= 0))
+            {
+                result = bag[givenIndex];                   // Entry to remove
+                bag[givenIndex] = bag[numberOfEntries - 1]; // Replace entry with last entry
+                bag[numberOfEntries - 1] = null;            // Remove last entry
+                numberOfEntries--;
+            } 
+        return result;
+    } 
+
+    /** Sees whether this bag is empty.
+     @return  True if this bag is empty, or false if not. */
+	public boolean isEmpty()
+	{
+     	return numberOfEntries == 0;
+	} 
+
 
     /** Gets the contents of two collections
         @param bag2 used to combine with the first bag
@@ -105,10 +142,11 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
         ResizeableArrayBag<T> newBag = new ResizeableArrayBag<>();
         T[] otherBag = bag2.toArray();
         newBag.copy(bag);
-        for(int counter = 0; counter < bag2.checkEntries(); counter++)
-        {
-            newBag.add(otherBag[counter]);
-        }
+        for(int counter2 = 0; counter2 < bag2.checkEntries(); counter2++)
+            {
+                newBag.add(otherBag[counter2]);
+            }
+        
         return newBag;
     }
 
@@ -123,7 +161,7 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
         {
             for(int counter2 = 0; counter2 < bag2.checkEntries(); counter2++)
             {
-                if(bag[counter] == otherBag[counter2]) {
+                if(bag[counter] == otherBag[counter2] && bag[counter] != null) {
                     newBag.add(bag[counter]);
                 }
             }
@@ -136,7 +174,20 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
         @returns new collection with the difference of the bag receiving the call with the bag placed in the parameter */
     public BagInterface<T> difference(BagInterface<T> bag2)
     {
-
+        ResizeableArrayBag<T> newBag = new ResizeableArrayBag<>();
+        T[] otherBag = bag2.toArray();
+        newBag.copy(bag);
+        for(int counter = 0; counter < bag.length; counter++)
+        {
+            for(int counter2 = 0; counter2 < otherBag.length; counter2++)
+            {
+                if(newBag.toArray()[counter] == otherBag[counter2] && otherBag[counter2] != null)
+                {
+                    newBag.removeEntry(counter);
+                    break;
+                }
+            }
+        }
+        return newBag;
     }
-    
 }
