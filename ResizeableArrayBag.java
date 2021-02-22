@@ -6,6 +6,10 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
     private static final int DEFAULT_CAPACITY = 25;
     private int CURRENT_CAPACITY;
     private int numberOfEntries;
+    private boolean integrityOK = false;
+    private static final int MAX_CAPACITY = 10000;
+
+
 
     /**Creates an empty bag with initial capacity 25 */
     public ResizeableArrayBag()
@@ -13,16 +17,32 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
         this(DEFAULT_CAPACITY);
     }
 
-    /**Creates an empty bag given a capacity
-       @param capacity the initial integer capacity */
-    public ResizeableArrayBag(int capacity) 
+	/** Creates an empty bag having a given capacity.
+     @param desiredCapacity  The integer capacity desired. */
+    public ResizeableArrayBag(int desiredCapacity)
     {
-        numberOfEntries = 0;
-        CURRENT_CAPACITY = DEFAULT_CAPACITY;
-        @SuppressWarnings("unchecked")
-        T[] initialBag = (T[])new Object[capacity];
-        bag = initialBag;
-    }
+        if (desiredCapacity <= MAX_CAPACITY)
+        {
+            // The cast is safe because the new array contains null entries
+            @SuppressWarnings("unchecked")
+            T[] tempBag = (T[])new Object[desiredCapacity]; // Unchecked cast
+            bag = tempBag;
+            CURRENT_CAPACITY = desiredCapacity;
+            numberOfEntries = 0;
+            integrityOK = true;
+        }
+        else
+            throw new IllegalStateException("Attempt to create a bag whose" +  "capacity exceeds allowed maximum.");	
+    } // end constructor
+   
+
+       // Throws an exception if this object is not initialized.
+   private void checkIntegrity()
+   {
+      if (!integrityOK)
+         throw new SecurityException("ArrayBag object is corrupt.");
+   } // end checkIntegrity
+
 
     /** Checks if bag is full
     @returns true or false if the bag is full */
@@ -41,11 +61,6 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
     public int checkEntries()
     {
         return numberOfEntries;
-    }
-
-    public int getCapacity() 
-    {
-        return CURRENT_CAPACITY;
     }
 
     public T[] toArray()
@@ -67,19 +82,23 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
         }
     }
 
-    /** Adds an item to the bag
-    @param entry what element is added to the bag */
-    public boolean add(T entry)
-    {
-        if(isFull()) 
-        {
+   /** Adds a new entry to this bag.
+       @param newEntry  The object to be added as a new entry.
+       @return  True.  */
+       public boolean add(T newEntry)
+       {
+          checkIntegrity();
+          if (isFull())
+          {
             resize();
-        } 
-        bag[numberOfEntries] = entry;
-        numberOfEntries++;
-        return true;
-    }    
-
+          } // end if
+    
+          bag[numberOfEntries] = newEntry;
+          numberOfEntries++;
+    
+          return true;
+       } // end add
+    
 
     private int getIndexOf(T anEntry)
     {
@@ -98,6 +117,17 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
         } 
     return where;
     } // end getIndexOf
+
+    /** Removes one unspecified entry from this bag, if possible.
+     @return  Either the removed entry, if the removal was successful,
+    or null otherwise. */
+    public T remove()
+    {
+    checkIntegrity();
+        T result = removeEntry(numberOfEntries - 1);		
+    return result;
+    } // end remove
+            
 
 	/** Removes one occurrence of a given entry from this bag.
     @param anEntry  The entry to be removed.
@@ -142,9 +172,9 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
         ResizeableArrayBag<T> newBag = new ResizeableArrayBag<>();
         T[] otherBag = bag2.toArray();
         newBag.copy(bag);
-        for(int counter2 = 0; counter2 < bag2.checkEntries(); counter2++)
+        for(int counter = 0; counter < bag2.checkEntries(); counter++)
             {
-                newBag.add(otherBag[counter2]);
+                newBag.add(otherBag[counter]);
             }
         
         return newBag;

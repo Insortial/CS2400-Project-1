@@ -16,22 +16,25 @@ public class ArrayBagTest
         bag2.add("x");
 
         System.out.print("Union: ");
-        print(bag1.union(bag2));
+        displayBag(bag1.union(bag2));
         System.out.print("Intersection: ");
-        print(bag1.intersection(bag2));
+        displayBag(bag1.intersection(bag2));
         System.out.print("Difference: ");
-        print(bag1.difference(bag2));
+        displayBag(bag1.difference(bag2));
         System.out.print("Difference 2: ");
-        print(bag2.difference(bag1));
+        displayBag(bag2.difference(bag1));
     }
 
-    public static void print(BagInterface<String> bag) 
+    public static void displayBag(BagInterface<String> bag) 
     {
-        int counter = 0;
-        while(counter < bag.checkEntries())
+        System.out.println("The bag contains the following string(s):");
+        Object[] bagArray = bag.toArray();
+        for (int index = 0; index < bagArray.length; index++)
         {
-            System.out.print(bag.removeEntry(counter) + ", ");
-        }
+            if(bagArray[index] != null)
+                System.out.print(bagArray[index] + " ");
+        } // end for
+
         System.out.println();
     }
 }

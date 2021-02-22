@@ -18,13 +18,17 @@ public interface BagInterface<T> {
     /** Gets the contents that would be left in one collection after removing that which occurs in the second
         @returns new collection with the difference of the bag receiving the call with the bag placed in the parameter */
     public int checkEntries();
-
-    public int getCapacity();
-
+    
     public T[] toArray();
 
-    public T removeEntry(int givenIndex);
+    /** Removes one unspecified entry from this bag, if possible.
+       @return  Either the removed entry, if the removal was successful,
+                or null otherwise. */
+	public T remove();
 
+    /** Adds a new entry to this bag.
+    @param newEntry  The object to be added as a new entry
+    @return  True if the addition is successful, or false if not. */
     public boolean add(T entry);
 
     public boolean isEmpty();
