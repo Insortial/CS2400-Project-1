@@ -18,7 +18,7 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
     }
 
 	/** Creates an empty bag having a given capacity.
-     @param desiredCapacity  The integer capacity desired. */
+    * @param desiredCapacity  The integer capacity desired. */
     public ResizeableArrayBag(int desiredCapacity)
     {
         if (desiredCapacity <= MAX_CAPACITY)
@@ -36,7 +36,7 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
     } // end constructor
    
 
-       // Throws an exception if this object is not initialized.
+   /** Throws an exception if this object is not initialized. */
    private void checkIntegrity()
    {
       if (!integrityOK)
@@ -58,16 +58,22 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
         bag = Arrays.copyOf(bag, CURRENT_CAPACITY);
     }    
 
+    /** Gets the contents that would be left in one collection after removing that which occurs in the second
+        @returns new collection with the difference of the bag receiving the call with the bag placed in the parameter */
     public int checkEntries()
     {
         return numberOfEntries;
     }
 
+    /** Converts bag into an array.
+     * @return array that contains the entries stored in the bags. */
     public T[] toArray()
     {
-        return bag;
+        return Arrays.copyOf(bag, CURRENT_CAPACITY);
     }
 
+    /** Copies the array from the array given in the parameter to the bag that the function is called from.
+     * @param bag2 the array that will be copied. */
     public void copy(T[] bag2)
     {
         bag = Arrays.copyOf(bag2, bag2.length);
@@ -85,21 +91,23 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
    /** Adds a new entry to this bag.
        @param newEntry  The object to be added as a new entry.
        @return  True.  */
-       public boolean add(T newEntry)
-       {
-          checkIntegrity();
-          if (isFull())
-          {
-            resize();
-          } // end if
-    
-          bag[numberOfEntries] = newEntry;
-          numberOfEntries++;
-    
-          return true;
-       } // end add
-    
+    public boolean add(T newEntry)
+    {
+        checkIntegrity();
+        if (isFull())
+        {
+        resize();
+        } // end if
 
+        bag[numberOfEntries] = newEntry;
+        numberOfEntries++;
+
+        return true;
+    } // end add
+    
+    /** Provides the index in the bag of a given entry
+     * @param anEntry the entry you want to find the index of
+     * @return the index of the entry that you provide in the parameter. */
     private int getIndexOf(T anEntry)
     {
         int where = -1;
@@ -123,9 +131,9 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
     or null otherwise. */
     public T remove()
     {
-    checkIntegrity();
+        checkIntegrity();
         T result = removeEntry(numberOfEntries - 1);		
-    return result;
+        return result;
     } // end remove
             
 
@@ -139,10 +147,9 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
         return entry.equals(result);
     }
 
-    /**Removes and returns the entry at a given index within the array bag.
-       If no such entry exists, returns null.
-       Preconditions: 0 <= givenIndex < numberOfEntries;
-                   checkIntegrity has been called. */
+    /**Removes and returns the entry at a given index within the array bag. If no such entry exists, returns null.
+     * @param givenIndex represents a position where you want to remove an entry. 
+     * @return the entry that is removed from the bag. */
     public T removeEntry(int givenIndex)
     {
             T result = null;
@@ -165,59 +172,67 @@ public class ResizeableArrayBag<T> implements BagInterface<T>
 
 
     /** Gets the contents of two collections
-        @param bag2 used to combine with the first bag
-        @returns new collection with the contents of both bags */
+    * @param bag2 used to combine with the first bag
+    * @returns new collection with the contents of both bags */
     public BagInterface<T> union(BagInterface<T> bag2)
     {
-        ResizeableArrayBag<T> newBag = new ResizeableArrayBag<>();
-        T[] otherBag = bag2.toArray();
-        newBag.copy(bag);
-        for(int counter = 0; counter < bag2.checkEntries(); counter++)
-            {
-                newBag.add(otherBag[counter]);
-            }
+        ResizeableArrayBag<T> newBag = new ResizeableArrayBag<>(); //creates a new bag to be returned.
+        T[] otherBag = bag2.toArray();  
+        newBag.copy(bag);               //copies the bag from the object that this object is being called on .
+
+        for(int counter = 0; counter < bag2.checkEntries(); counter++) //adds entries from bag inserted via parameter to the bag with copied entries.
+        {
+            newBag.add(otherBag[counter]);
+        }
         
         return newBag;
     }
 
     /** Gets the contents of two collections that occur in both
-        @param bag2 used to combine with the first bag
-        @returns new collection with the contents of both bags that occur in both */
+    * @param bag2 used to combine with the first bag
+    * @returns new collection with the contents of both bags that occur in both */
     public BagInterface<T> intersection(BagInterface<T> bag2)
     {
-        ResizeableArrayBag<T> newBag = new ResizeableArrayBag<>();
+        ResizeableArrayBag<T> newBag = new ResizeableArrayBag<>(); //creates a new bag to be returned.
         T[] otherBag = bag2.toArray();
+
         for(int counter = 0; counter < checkEntries(); counter++)
         {
             for(int counter2 = 0; counter2 < bag2.checkEntries(); counter2++)
             {
-                if(bag[counter] == otherBag[counter2] && bag[counter] != null) {
+                if(bag[counter] == otherBag[counter2] && bag[counter] != null) //compares the two bags and checks if they have equal entries, then adds it to the new bag.
+                {
                     newBag.add(bag[counter]);
+                    otherBag[counter2] = null; 
                 }
             }
         }
+
         return newBag;
     }
 
     /** Gets the contents that would be left in one collection after removing that which occurs in the second
-        @param bag2 used to combine with the first bag
-        @returns new collection with the difference of the bag receiving the call with the bag placed in the parameter */
+    * @param bag2 used to combine with the first bag
+    * @returns new collection with the difference of the bag receiving the call with the bag placed in the parameter */
     public BagInterface<T> difference(BagInterface<T> bag2)
     {
-        ResizeableArrayBag<T> newBag = new ResizeableArrayBag<>();
+        ResizeableArrayBag<T> newBag = new ResizeableArrayBag<>(); //creates a new bag to be returned.
+        newBag.copy(bag);                                          //copies the bag from the object that this object is being called on .
         T[] otherBag = bag2.toArray();
-        newBag.copy(bag);
+
         for(int counter = 0; counter < bag.length; counter++)
         {
             for(int counter2 = 0; counter2 < otherBag.length; counter2++)
             {
-                if(newBag.toArray()[counter] == otherBag[counter2] && otherBag[counter2] != null)
+                if(bag[counter] == otherBag[counter2] && bag[counter] != null) //checks if the other bag has the same entry and then removes the entry from the newBag.
                 {
-                    newBag.removeEntry(counter);
+                    newBag.remove(bag[counter]); 
+                    otherBag[counter2] = null;
                     break;
                 }
             }
         }
+
         return newBag;
     }
 }

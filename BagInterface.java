@@ -19,6 +19,8 @@ public interface BagInterface<T> {
         @returns new collection with the difference of the bag receiving the call with the bag placed in the parameter */
     public int checkEntries();
     
+    /** Converts bag into an array.
+     * @return array that contains the entries stored in the bags. */
     public T[] toArray();
 
     /** Removes one unspecified entry from this bag, if possible.
@@ -31,5 +33,7 @@ public interface BagInterface<T> {
     @return  True if the addition is successful, or false if not. */
     public boolean add(T entry);
 
+    /** Checks if bag is empty.
+     * @return boolean value, true if bag is empty false if it is not. */
     public boolean isEmpty();
 }
